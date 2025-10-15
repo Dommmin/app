@@ -2,9 +2,30 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import axios from './lib/axios';
+import { useEffect } from 'react';
+
+type User = {
+    name: string;
+}
 
 function App() {
   const [count, setCount] = useState(0)
+    const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUser = () => {
+      setIsLoading(true);
+
+      axios
+          .get('http://localhost:8000/api/user')
+          .then(response => setUser(response.data))
+          .finally(() => setIsLoading(false));
+  }
+
+  useEffect(() => {
+      fetchUser();
+  }, [])
 
   return (
     <>
@@ -21,6 +42,7 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
+          The user is {isLoading ? 'Loading ...' : user ? user.name : 'Unauthenticated'}
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
